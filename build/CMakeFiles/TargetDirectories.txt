@@ -1,0 +1,3 @@
+E:/Github Projects/Smart_Key_Logger/build/CMakeFiles/SmartKeyLogger.dir
+E:/Github Projects/Smart_Key_Logger/build/CMakeFiles/edit_cache.dir
+E:/Github Projects/Smart_Key_Logger/build/CMakeFiles/rebuild_cache.dir

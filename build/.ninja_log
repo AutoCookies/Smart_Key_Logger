@@ -1,0 +1,8 @@
+# ninja log v6
+6	830	7723166517609663	CMakeFiles/SmartKeyLogger.dir/main.cpp.obj	e765aa6e49753d1e
+29	6414	7723166517939697	CMakeFiles/SmartKeyLogger.dir/keylogger/recorder.cpp.obj	e47d64335f98db1c
+127	7047	7723166519894997	CMakeFiles/SmartKeyLogger.dir/ai/spelling_corrector.cpp.obj	db87d67b0b327c63
+98	7607	7723166518749737	CMakeFiles/SmartKeyLogger.dir/ai/ai_model.cpp.obj	6a24b441878e27ae
+18	10980	7723166517749704	CMakeFiles/SmartKeyLogger.dir/keylogger/hook.cpp.obj	775ec8054cb31fce
+46	15409	7723166518419705	CMakeFiles/SmartKeyLogger.dir/analysis/analyzer.cpp.obj	e26bb33507c1fa63
+15411	16306	7723166671673443	SmartKeyLogger.exe	dff8bc9d3d817926

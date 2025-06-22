@@ -1,0 +1,19 @@
+smart-keylogger/
+├── main.cpp                # Điểm vào chính của ứng dụng
+├── keylogger/
+│   ├── hook.h/.cpp         # Móc và ghi lại phím nhấn
+│   ├── recorder.h/.cpp     # Ghi phím + timestamp vào log
+├── analysis/
+│   ├── analyzer.h/.cpp     # Phân tích tần suất và mẫu sai
+│   ├── suggester.h/.cpp    # Đề xuất gợi ý khi phát hiện sai quen
+├── storage/
+│   ├── logger.h/.cpp       # Ghi log ra file
+│   ├── exporter.h/.cpp     # Xuất báo cáo ra file .json
+├── utils/
+│   ├── config.h/.cpp       # Cấu hình, thư mục lưu, shortcuts bỏ qua
+│   ├── pattern_matcher.h/.cpp # Tìm chuỗi sai lặp lại
+├── data/
+│   └── keystrokes.log      # File log gốc
+│   └── report.json         # Báo cáo đã xử lý
+├── README.md
+└── CMakeLists.txt          # Hoặc Makefile để build
