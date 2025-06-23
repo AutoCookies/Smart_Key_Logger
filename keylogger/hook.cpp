@@ -3,14 +3,13 @@
 #include <windows.h>
 #include <string>
 #include <sstream>
-#include <iostream>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include "../ai/ai_model.h"
-#include "../ai/spelling_corrector.h"
+#include "pybind_typo_corrector.h"
 
-AIModel model;
-SpellingCorrector spellCorrector;
-bool dictionaryLoaded = false;
+PyTypoCorrector* corrector = nullptr;
+bool correctorLoaded = false;
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -36,34 +35,45 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
             // 1. Ghi log
             LogKey(keyStr);
 
-            // 2. Cập nhật AI model
-            model.observeKey(keyStr);
-
-            // 3. Tải từ điển nếu chưa tải
-            if (!dictionaryLoaded)
+            // 2. Tải mô hình nếu chưa tải
+            if (!correctorLoaded)
             {
-                spellCorrector.loadDictionary("data/dictionary.txt");
-                dictionaryLoaded = true;
-            }
-
-            // 4. Tạo chuỗi hiện tại
-            std::ostringstream oss;
-            for (const auto &k : model.getRecentKeys())
-            {
-                oss << k;
-            }
-            std::string currentInput = oss.str();
-
-            // 5. Gợi ý nếu phát hiện lỗi
-            std::string aiSuggestion;
-            if (!model.isLikelyMistake(aiSuggestion) && currentInput.length() >= 2)
-            {
-                std::string correction = spellCorrector.suggestCorrection(currentInput);
-                if (!correction.empty() && correction != currentInput)
-                {
-                    std::cout << "[Gợi ý chính tả] Có thể bạn muốn gõ: " << correction << std::endl;
+                try {
+                    corrector = new PyTypoCorrector("typo_model");
+                    correctorLoaded = true;
+                }
+                catch (const std::exception& e) {
+                    std::wstring error = L"Không thể tải mô hình Python: " + std::wstring(e.what(), e.what() + strlen(e.what()));
+                    MessageBoxW(nullptr, error.c_str(), L"Lỗi", MB_ICONERROR);
+                    return CallNextHookEx(nullptr, nCode, wParam, lParam);
                 }
             }
+
+            // 3. Tạo chuỗi hiện tại
+            static std::string currentInput;
+            currentInput += keyStr;
+
+            // 4. Gợi ý nếu phát hiện lỗi
+            if (currentInput.length() >= 2)
+            {
+                std::string correction = corrector->correct(currentInput);
+                if (!correction.empty() && correction != currentInput)
+                {
+                    std::wstring message = L"Có thể bạn muốn gõ: " + std::wstring(correction.begin(), correction.end());
+                    MessageBoxW(nullptr, message.c_str(), L"Gợi ý chính tả", MB_ICONINFORMATION | MB_OK);
+                    currentInput.clear(); // Xóa chuỗi sau khi gợi ý
+                }
+            }
+
+            // Xóa chuỗi nếu gặp phím cách hoặc enter
+            if (vkCode == VK_SPACE || vkCode == VK_RETURN)
+            {
+                currentInput.clear();
+            }
+        }
+        else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+        {
+            // Có thể thêm logic cho keyup nếu cần
         }
     }
 
@@ -72,10 +82,14 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 void SetKeyboardHook()
 {
+    // Khởi tạo Python runtime
+    Py_Initialize();
+
     HHOOK hHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
     if (!hHook)
     {
         MessageBoxW(nullptr, L"Không thể cài hook!", L"Lỗi", MB_ICONERROR);
+        Py_Finalize();
         return;
     }
 
@@ -87,4 +101,6 @@ void SetKeyboardHook()
     }
 
     UnhookWindowsHookEx(hHook);
+    delete corrector;
+    Py_Finalize();
 }

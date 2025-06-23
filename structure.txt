@@ -1,5 +1,9 @@
 smart-keylogger/
 ├── main.cpp                # Điểm vào chính của ứng dụng
+├── build/
+│   ├── data/        # Móc và ghi lại phím nhấn
+│   ├     └── keystrokes.log 
+│   ├── SmartKeyLogger.exe     # Ghi phím + timestamp vào log
 ├── keylogger/
 │   ├── hook.h/.cpp         # Móc và ghi lại phím nhấn
 │   ├── recorder.h/.cpp     # Ghi phím + timestamp vào log
@@ -15,5 +19,8 @@ smart-keylogger/
 ├── data/
 │   └── keystrokes.log      # File log gốc
 │   └── report.json         # Báo cáo đã xử lý
+├── ml_model/
+│   └── process_log.py    
+│   └── main.py    
 ├── README.md
 └── CMakeLists.txt          # Hoặc Makefile để build
